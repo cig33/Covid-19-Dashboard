@@ -1,0 +1,60 @@
+---
+title: "Christina G."
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    social: ["instagram", "twitter", "facebook"]
+    source_code: https://github.com/cig33/Covid-19-Dashboard
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+```
+
+Analysis
+=======================================================================
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Pickles
+
+```{r}
+
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+
+```
+
+### Chart C
+
+```{r}
+
+```
+
+Raw Data
+=======================================================================
+
+### Data Table of Raw Covid-19 Data
+
+```{r}
+floridaCounties <- read_csv("Data/us-counties.csv") %>% 
+  filter(state == 'Florida')
+```
+
+```{r}
+DT::datatable(floridaCounties, options = list(
+  pageLength = 25,
+  height = '600px'
+))
+```
+
