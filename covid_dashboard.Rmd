@@ -35,15 +35,18 @@ Column {data-width=650}
 ### Total Confirmed Positive
 
 ```{r}
+# Florida Counties Dataset
 floridaCounties <- read_csv("Data/us-counties.csv") %>% 
   filter(state == 'Florida') 
 ```
 
 ```{r}
+# Obtaining Max # of Cases by County
 maxCases <- floridaCounties %>% 
   group_by(county) %>% 
   summarise(maxValCases = max(cases)) 
 
+# Adding up # of Cases by County
 cases <- sum(maxCases$maxValCases)
 
 valueBox(cases, icon = "fa-thermometer-three-quarters", color = "orange" )
@@ -52,10 +55,12 @@ valueBox(cases, icon = "fa-thermometer-three-quarters", color = "orange" )
 ### Total Confirmed Deaths
 
 ```{r}
+# Obtaining Max # of Deaths by County
 maxDeaths <- floridaCounties %>% 
   group_by(county) %>% 
   summarise(maxValDeaths = max(deaths)) 
 
+# Adding up # of Deaths by County
 deaths <- sum(maxDeaths$maxValDeaths)
 
 valueBox(deaths, icon = "fa-ambulance", color = "maroon")
@@ -64,8 +69,10 @@ valueBox(deaths, icon = "fa-ambulance", color = "maroon")
 ### County with the Highest # of Cases & Deaths
 
 ```{r}
+# Dataset with Cases & Deaths by County
 fullData <- left_join(maxCases, maxDeaths, by = "county")
 
+# Pulling County Names w/ MOST Cases & Deaths
 max <- fullData %>% 
   filter(maxValCases == max(maxValCases) & maxValDeaths == max(maxValDeaths)) %>% 
   pull(county)
@@ -79,6 +86,7 @@ Column {data-width=350}
 ### Rate of Cases since March 1
 
 ```{r}
+# Dataset with # of Cases per Day
 casePerDay <- floridaCounties %>% 
   group_by(date) %>% 
   summarise(Cases = sum(cases)) %>% 
@@ -87,14 +95,19 @@ casePerDay <- floridaCounties %>%
 
 ```{r}
 ggplot(data = casePerDay, aes(x = `Days Since March 1, 2020`, y = Cases)) +
-  geom_line(color = "blue") +
+  
+  # Labels 
   scale_x_date(labels = date_format("%b %d")) +
+  
+  # Themes & Geometric layer 
+  geom_line(color = "blue") +
   theme_light()
 ```
 
 ### What are the Symptoms?
 
 ```{r}
+# Including Covid-19 Symptoms Pic.
 include_graphics("COVID19.jpg")
 ```
 
@@ -104,6 +117,7 @@ Raw Data
 ### Data Table of Raw Covid-19 Data
 
 ```{r}
+# Raw Dataset Display
 DT::datatable(floridaCounties, options = list(
   pageLength = 25,
   height = '600px'
