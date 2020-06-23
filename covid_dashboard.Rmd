@@ -9,9 +9,21 @@ date: "`r format(Sys.time(), '%B %d, %Y')`"
 runtime: shiny
 ---
 
-```{r setup, include=FALSE}
+<style>  
+
+.navbar {
+  background-color:teal;
+}
+
+</style> 
+
+```{r setup, include = FALSE}
 library(flexdashboard)
+library(knitr)
 library(tidyverse)
+library(lubridate)
+library(scales)
+library(ggthemes)
 ```
 
 Analysis
@@ -20,36 +32,76 @@ Analysis
 Column {data-width=650}
 -----------------------------------------------------------------------
 
-### Pickles
+### Total Confirmed Positive
 
 ```{r}
+floridaCounties <- read_csv("Data/us-counties.csv") %>% 
+  filter(state == 'Florida') 
+```
 
+```{r}
+maxCases <- floridaCounties %>% 
+  group_by(county) %>% 
+  summarise(maxValCases = max(cases)) 
+
+cases <- sum(maxCases$maxValCases)
+
+valueBox(cases, icon = "fa-thermometer-three-quarters", color = "orange" )
+```
+
+### Total Confirmed Deaths
+
+```{r}
+maxDeaths <- floridaCounties %>% 
+  group_by(county) %>% 
+  summarise(maxValDeaths = max(deaths)) 
+
+deaths <- sum(maxDeaths$maxValDeaths)
+
+valueBox(deaths, icon = "fa-ambulance", color = "maroon")
+```
+
+### County with the Highest # of Cases & Deaths
+
+```{r}
+fullData <- left_join(maxCases, maxDeaths, by = "county")
+
+max <- fullData %>% 
+  filter(maxValCases == max(maxValCases) & maxValDeaths == max(maxValDeaths)) %>% 
+  pull(county)
+
+valueBox(max, icon = "fa-heartbeat", color = "purple")
 ```
 
 Column {data-width=350}
 -----------------------------------------------------------------------
 
-### Chart B
+### Rate of Cases since March 1
 
 ```{r}
-
+casePerDay <- floridaCounties %>% 
+  group_by(date) %>% 
+  summarise(Cases = sum(cases)) %>% 
+  rename(`Days Since March 1, 2020` = date)
 ```
 
-### Chart C
+```{r}
+ggplot(data = casePerDay, aes(x = `Days Since March 1, 2020`, y = Cases)) +
+  geom_line(color = "blue") +
+  scale_x_date(labels = date_format("%b %d")) +
+  theme_light()
+```
+
+### What are the Symptoms?
 
 ```{r}
-
+include_graphics("COVID19.jpg")
 ```
 
 Raw Data
 =======================================================================
 
 ### Data Table of Raw Covid-19 Data
-
-```{r}
-floridaCounties <- read_csv("Data/us-counties.csv") %>% 
-  filter(state == 'Florida')
-```
 
 ```{r}
 DT::datatable(floridaCounties, options = list(
