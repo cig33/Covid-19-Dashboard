@@ -97,7 +97,7 @@ casePerDay <- floridaCounties %>%
 ggplot(data = casePerDay, aes(x = `Days Since March 1, 2020`, y = Cases)) +
   
   # Labels 
-  scale_x_date(labels = date_format("%b %d")) +
+  scale_x_date(labels = date_format("%b %d"), date_breaks = '2 week') +
   
   # Themes & Geometric layer 
   geom_line(color = "blue") +
